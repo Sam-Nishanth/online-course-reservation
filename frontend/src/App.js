@@ -1,20 +1,28 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import CourseList from "./pages/CourseList";
-import MyReservations from "./pages/MyReservations";
+import StudentDashboard from "./pages/StudentDashboard";
+import InstructorDashboard from "./pages/InstructorDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
+  const role = localStorage.getItem("role");
+
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Signup />} />
+        <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/courses" element={<CourseList />} />
-        <Route path="/reservations" element={<MyReservations />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/signup" element={<Signup />} />
+
+        {/* Student */}
+        <Route path="/courses" element={role === "student" ? <StudentDashboard /> : <Navigate to="/login" />} />
+
+        {/* Instructor */}
+        <Route path="/instructor" element={role === "instructor" ? <InstructorDashboard /> : <Navigate to="/login" />} />
+
+        {/* Admin */}
+        <Route path="/admin" element={role === "admin" ? <AdminDashboard /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );

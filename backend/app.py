@@ -4,7 +4,7 @@ from flask_jwt_extended import (
     JWTManager, create_access_token, jwt_required, get_jwt_identity
 )
 from config import Config
-from models import db, User, Course, Reservation
+from models import db, Student, Instructor, Admin
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -23,24 +23,39 @@ with app.app_context():
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.json
-    user = User(
-        name=data['name'],
-        email=data['email'],
-        password=data['password']
-    )
+    role = data['role']
+
+    if role == "student":
+        user = Student(name=data['name'], email=data['email'], password=data['password'])
+    elif role == "instructor":
+        user = Instructor(name=data['name'], email=data['email'], password=data['password'])
+    elif role == "admin":
+        user = Admin(name=data['name'], email=data['email'], password=data['password'])
+    else:
+        return jsonify({"msg": "Invalid role"}), 400
+
     db.session.add(user)
     db.session.commit()
-    return jsonify({"msg": "User registered"}), 201
+    return jsonify({"msg": f"{role.capitalize()} registered successfully"}), 201
 
 
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
-    user = User.query.filter_by(email=data['email'], password=data['password']).first()
+    role = data['role']
+
+    user = None
+    if role == "student":
+        user = Student.query.filter_by(email=data['email'], password=data['password']).first()
+    elif role == "instructor":
+        user = Instructor.query.filter_by(email=data['email'], password=data['password']).first()
+    elif role == "admin":
+        user = Admin.query.filter_by(email=data['email'], password=data['password']).first()
+
     if not user:
         return jsonify({"msg": "Invalid credentials"}), 401
 
-    token = create_access_token(identity={"id": user.id, "role": user.role})
+    token = create_access_token(identity={"id": user.id, "role": role})
     return jsonify(access_token=token)
 
 
