@@ -1,11 +1,15 @@
 # Backend
 backend/venv/
 backend/__pycache__/
-backend/*.db
+backend/*.pyc
+backend/database.db
+backend/instance/
+backend/.env
 
 # Frontend
 frontend/node_modules/
 frontend/build/
+frontend/.env
 
 # General
 .env

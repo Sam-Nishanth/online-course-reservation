@@ -1,10 +1,10 @@
 import React from "react";
 
-function AdminDashboard() {
+function AdminDashboard({ user }) {
   return (
     <div>
-      <h1>⚙️ Admin Dashboard</h1>
-      <p>Manage users, approve courses, and view reports.</p>
+      <h2>Admin Panel</h2>
+      <p>Manage users and courses here.</p>
     </div>
   );
 }

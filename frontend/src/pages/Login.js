@@ -1,62 +1,74 @@
 import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import API from "../services/api";
-import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [form, setForm] = useState({
     email: "",
-    password: "",
-    role: "student"
+    password: ""
   });
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const res = await API.post("/login", form);
 
-      localStorage.setItem("token", res.data.access_token);
-      localStorage.setItem("role", form.role);
+      // Save user in localStorage
+      localStorage.setItem("user", JSON.stringify(res.data));
 
-      alert("Login successful");
+      navigate("/dashboard");
 
-      // Role-based navigation
-      if (form.role === "admin") navigate("/admin");
-      else if (form.role === "instructor") navigate("/instructor");
-      else navigate("/courses");
-
-    } catch (err) {
+    } catch (error) {
       alert("Invalid credentials");
     }
   };
 
   return (
-    <div>
+    <div style={styles.container}>
       <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
+
+      <form onSubmit={handleSubmit} style={styles.form}>
         <input
+          type="email"
           placeholder="Email"
-          onChange={e => setForm({ ...form, email: e.target.value })}
+          required
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
         <input
           type="password"
           placeholder="Password"
-          onChange={e => setForm({ ...form, password: e.target.value })}
+          required
+          value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
-
-        {/* Role Selection */}
-        <select onChange={e => setForm({ ...form, role: e.target.value })}>
-          <option value="student">Student</option>
-          <option value="instructor">Instructor</option>
-          <option value="admin">Admin</option>
-        </select>
 
         <button type="submit">Login</button>
       </form>
+
+      <p>
+        Don’t have an account? <Link to="/signup">Register</Link>
+      </p>
     </div>
   );
 }
+
+const styles = {
+  container: {
+    textAlign: "center",
+    marginTop: "100px"
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    width: "300px",
+    margin: "auto"
+  }
+};
 
 export default Login;
